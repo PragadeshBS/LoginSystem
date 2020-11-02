@@ -5,16 +5,22 @@ import ValueInspector as Check
 import sys
 
 
-def login_handler(current_user, current_user_password, file_name, relaunch=False, pwd_changed=0):
+def login_handler(current_user, current_user_password, file_name, relaunch=False, pwd_changed=0, delete=0, clear_data=0):
     root.clear()
     if not relaunch:
         print(f"\nYou are now logged in as {current_user}")
+    if clear_data == 1:
+        print("Your data has been successfully removed")
+    elif clear_data == -1:
+        print("No changes were made to your data")
     if pwd_changed == 1:
         print("Your password has been successfully changed")
     elif pwd_changed == -1:
         print("Passwords did not match, password could not be changed")
     elif pwd_changed == -2:
         print("Incorrect password, password could not be changed")
+    if delete == -1:
+        print("Incorrect password, your account has not been deleted")
     old_data = Dh.read_data(current_user, current_user_password, file_name)
     if (old_data == "") and not relaunch:
         print("\nEnter any data that you want to store.")
@@ -69,19 +75,25 @@ def login_handler(current_user, current_user_password, file_name, relaunch=False
             confirmation = input("Enter your password to proceed>>")
             if confirmation == current_user_password:
                 Ch.remove_credentials(current_user, current_user_password, file_name)
-                print("Your account and related data has been successfully deleted")
+                root.clear()
+                print("Your account and related data have been successfully deleted")
                 root.main()
             else:
-                print("Incorrect password, your account has not been deleted\n")
-                login_handler(current_user, current_user_password, file_name, True)
+                login_handler(current_user, current_user_password, file_name, True, delete=-1)
         elif user_input == "c":
-            Dh.write_data(current_user, current_user_password, "", file_name)
-            login_handler(current_user, current_user_password, file_name, True)
-            break
+            confirmation = input("This will clear all your data, are you sure? (y/n)>>").lower().strip()
+            if (confirmation == "y") or (confirmation == "yes"):
+                Dh.write_data(current_user, current_user_password, "", file_name)
+                login_handler(current_user, current_user_password, file_name, True, clear_data=1)
+                break
+            else:
+                login_handler(current_user, current_user_password, file_name, True, clear_data=-1)
+                break
         elif user_input == "exit":
             sys.exit()
         elif user_input == "s":
             root.clear()
+            print("You have been successfully logged out of your account")
             root.main()
             break
         else:
