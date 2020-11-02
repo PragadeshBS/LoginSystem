@@ -1,7 +1,6 @@
 import DataHandler as Dh
 from cryptography.fernet import Fernet
-with open("key.key", "r") as key_file:
-    key = key_file.read()
+key = "ftxTJgmXgp6A3LLm5MltUZS6NlnJiiis70RyNM8xRIA="
 
 f = Fernet(key)
 
