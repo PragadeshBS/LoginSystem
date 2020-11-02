@@ -7,8 +7,7 @@ try:
     from cryptography import *
     import cryptography
     from cryptography.fernet import Fernet
-    with open("key.key", "r") as key_file:
-        key = key_file.read()
+    key = "ftxTJgmXgp6A3LLm5MltUZS6NlnJiiis70RyNM8xRIA="
 
     f = Fernet(key)
 
@@ -62,11 +61,13 @@ try:
 
 
     def sign_in():
+        attempts = 0
         user_name = input("\nEnter your user name>>").strip()
         if (user_name.lower() == "back") or (user_name.lower() == "exit"):
             main()
         if Ch.verify_username(user_name, "data.txt") == 1:
-            while True:
+            while True and (attempts < 4):
+                attempts += 1
                 user_password = input("Enter your password>>").strip()
                 if (user_password.lower() == "back") or (user_password.lower() == "exit"):
                     main()
@@ -76,6 +77,8 @@ try:
                     break
                 else:
                     print("Invalid password, try again...\n")
+            else:
+                print("You have entered an incorrect password multiple times")
         elif (user_name == "back") or (user_name == "exit"):
             main()
         else:
@@ -89,7 +92,7 @@ try:
             initials = file.read(17)
         encrypt_file("data.txt")
         if not initials == "%%%File secure---":
-            print("Seems like some files are corrupt, data cannot be processed...")
+            print("Seems like the data file is corrupt, data cannot be processed...")
             input("You may press 'Enter' to exit>>")
             sys.exit()
         while True:
