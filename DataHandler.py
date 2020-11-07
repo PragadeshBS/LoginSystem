@@ -33,7 +33,7 @@ def decrypt(message):
 
 
 def write_data(username, password, data, file_name):
-    decrypt_file("data.txt")
+    decrypt_file(file_name)
     username = username.lower()
     with open(file_name, "r+") as file:
         lines = file.readlines()
@@ -46,18 +46,39 @@ def write_data(username, password, data, file_name):
                 file.write(line)
         file.write(output_string)
         file.truncate()
-    encrypt_file("data.txt")
+    encrypt_file(file_name)
+    return 1
+
+
+def append_data(username, password, file_name, data_to_append, file_encrypted=True):
+    if file_encrypted:
+        decrypt_file(file_name)
+    username = username.lower()
+    existing_data = read_data(username, password, file_name, False)
+    old_string = username + " : " + password + " %%% -- " + existing_data + " --end"
+    length = len(old_string)
+    new_string = username + " : " + password + " %%% -- " + existing_data + " " + data_to_append + " --end\n"
+    with open(file_name, "r+") as file:
+        lines = file.readlines()
+        file.seek(0)
+        for line in lines:
+            if line[:length] != old_string:
+                file.write(line)
+        file.write(new_string)
+        file.truncate()
+    if file_encrypted:
+        encrypt_file(file_name)
     return 1
 
 
 def read_data(username, password, file_name, file_encrypted=True):
     if file_encrypted:
-        decrypt_file("data.txt")
+        decrypt_file(file_name)
     username = username.lower()
     with open(file_name, "r") as file:
         lines = file.readlines()
     if file_encrypted:
-        encrypt_file("data.txt")
+        encrypt_file(file_name)
     initial_string = username + " : " + password + " %%% -- "
     initial_length = len(initial_string)
     length = len(initial_string) + 7
